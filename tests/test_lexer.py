@@ -107,3 +107,10 @@ class TestLexer(unittest.TestCase):
     self.assertEqual(lexer.get_next_token(), Token(Type.PLUS, '+'))
     self.assertRaises(Exception, lexer.get_next_token)
   
+  def test_ignore_comments(self):
+    lexer = Lexer('# comment \n 1 + 1')
+    self.assertEqual(lexer.get_next_token(), Token(Type.INT, 1))
+    self.assertEqual(lexer.get_next_token(), Token(Type.PLUS, '+'))
+    self.assertEqual(lexer.get_next_token(), Token(Type.INT, 1))
+    self.assertEqual(lexer.get_next_token(), Token(Type.EOF, ''))
+  

@@ -18,6 +18,12 @@ class Lexer:
     while self.pos < len(self.text) and self.text[self.pos].isspace():
       self.pos += 1
 
+    while self.pos < len(self.text) and self.text[self.pos] == '#':
+      while self.pos < len(self.text) and self.text[self.pos] != '\n':
+        self.pos += 1
+      while self.pos < len(self.text) and self.text[self.pos].isspace():
+        self.pos += 1
+
     if self.pos == len(self.text):
       return Token(Type.EOF, '')
 
