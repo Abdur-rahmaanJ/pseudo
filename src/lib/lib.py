@@ -26,6 +26,8 @@ class Type:
   GTEQ, \
   ID, \
   IF, \
+  IFF, \
+  IMPL, \
   IN, \
   IS, \
   INT, \
@@ -128,10 +130,14 @@ class Type:
       return 'ID'
     if type == Type.IF:
       return 'IF'
+    if type == Type.IF:
+      return 'IFF'
+    if type == Type.IMPL:
+      return 'IMPL'
     if type == Type.IN:
       return 'IN'
     if type == Type.IS:
-      return 'IN'
+      return 'IS'
     if type == Type.INT:
       return 'INT'
     if type == Type.INTERVAL:
@@ -248,6 +254,7 @@ class Reserved:
         'false': Token(Type.BOOL, False),
         'forall': Token(Type.FORALL, 'forall'),
         'if': Token(Type.IF, 'if'),
+        'iff': Token(Type.IFF, '<=>'),
         'in': Token(Type.IN, 'in'),
         'is': Token(Type.IS, 'is'),
         'Integer': Token(Type.Z, 'Z'),
@@ -257,6 +264,7 @@ class Reserved:
         'Natural': Token(Type.N, 'N'),
         'null': Token(Type.NULL, 'null'),
         'of': Token(Type.OF, 'of'),
+        'onlyif': Token(Type.IMPL, '=>'),
         'pi': Token(Type.PI, 'pi'),
         'Q': Token(Type.Q, 'Q'),
         'Rational': Token(Type.Q, 'Q'),

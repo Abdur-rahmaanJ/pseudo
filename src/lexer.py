@@ -19,8 +19,16 @@ class Lexer:
     while self.pos < len(self.text) and self.text[self.pos].isspace():
       self.pos += 1
 
-    while self.pos < len(self.text) and self.text[self.pos] == '#':
+    if self.pos+1 < len(self.text) and self.text[self.pos:self.pos+2] == '//':
+      self.pos += 2
       while self.pos < len(self.text) and self.text[self.pos] != '\n':
+        self.pos += 1
+      while self.pos < len(self.text) and self.text[self.pos].isspace():
+        self.pos += 1
+    
+    if self.pos+1 < len(self.text) and self.text[self.pos:self.pos+2] == '/*':
+      self.pos += 2
+      while self.pos+1 < len(self.text) and self.text[self.pos:self.pos+2] != '*/':
         self.pos += 1
       while self.pos < len(self.text) and self.text[self.pos].isspace():
         self.pos += 1
@@ -89,12 +97,17 @@ class Lexer:
     if self.text[self.pos] == '_':
       self.pos += 1
       return Token(Type.UNDER, '_')
+
+    if self.pos+2 < len(self.text) and self.text[self.pos:self.pos+3] == '**T':
+      self.pos += 3
+      return Token(Type.TPOSE, '**T')
+
+    if self.pos+1 < len(self.text) and self.text[self.pos:self.pos+2] == '**':
+      self.pos += 2
+      return Token(Type.POW, '**')
     
     if self.text[self.pos] == '*':
       self.pos += 1
-      if self.pos < len(self.text) and self.text[self.pos] == '*':
-        self.pos += 1
-        return Token(Type.POW, '**')
       return Token(Type.COMPOSE, '*')
 
     if self.text[self.pos] == '/':
@@ -117,37 +130,53 @@ class Lexer:
       self.pos += 1
       return Token(Type.UNION, '+')
 
+    if self.pos+1 < len(self.text) and self.text[self.pos:self.pos+2] == '->':
+      self.pos += 2
+      return Token(Type.TO, '->')
+
     if self.text[self.pos] == '-':
       self.pos += 1
-      if self.pos < len(self.text) and self.text[self.pos] == '>':
-        self.pos += 1
-        return Token(Type.TO, '->')
       return Token(Type.DIFF, '-')
+
+    if self.text[self.pos] == '#':
+      self.pos += 1
+      return Token(Type.CARD, '#')
 
     if self.text[self.pos] == '!':
       self.pos += 1
       return Token(Type.FACT, '!')
 
+    if self.pos+1 < len(self.text) and self.text[self.pos:self.pos+2] == '~=':
+      self.pos += 2
+      return Token(Type.NEQ, '~=')
+    
     if self.text[self.pos] == '~':
       self.pos += 1
-      if self.pos < len(self.text) and self.text[self.pos] == '=':
-        self.pos += 1
-        return Token(Type.NEQ, '~=')
       return Token(Type.NOT, '~')
+    
+    if self.pos+1 < len(self.text) and self.text[self.pos:self.pos+2] == '>=':
+      self.pos += 2
+      return Token(Type.GTEQ, '>=')
     
     if self.text[self.pos] == '>':
       self.pos += 1
-      if self.pos < len(self.text) and self.text[self.pos] == '=':
-        self.pos += 1
-        return Token(Type.GTEQ, '>=')
       return Token(Type.GT, '>')
+
+    if self.pos+2 < len(self.text) and self.text[self.pos:self.pos+3] == '<=>':
+      self.pos += 3
+      return Token(Type.IFF, '<=>')
+    
+    if self.pos+1 < len(self.text) and self.text[self.pos:self.pos+2] == '<=':
+      self.pos += 2
+      return Token(Type.LTEQ, '<=')
     
     if self.text[self.pos] == '<':
       self.pos += 1
-      if self.pos < len(self.text) and self.text[self.pos] == '=':
-        self.pos += 1
-        return Token(Type.LTEQ, '<=')
       return Token(Type.LT, '<')
+    
+    if self.pos+1 < len(self.text) and self.text[self.pos:self.pos+2] == '=>':
+      self.pos += 2
+      return Token(Type.IMPL, '=>')
 
     if self.text[self.pos] == '=':
       self.pos += 1
@@ -160,6 +189,10 @@ class Lexer:
     if self.text[self.pos] == ')':
       self.pos += 1
       return Token(Type.CLOSEP, ')')
+    
+    if self.pos+1 < len(self.text) and self.text[self.pos:self.pos+2] == '||':
+      self.pos += 2
+      return Token(Type.NORM, '||')
 
     if self.text[self.pos] == '|':
       self.pos += 1
@@ -181,18 +214,20 @@ class Lexer:
       self.pos += 1
       return Token(Type.CLOSEC, '}')
 
+    if self.pos+1 < len(self.text) and self.text[self.pos:self.pos+2] == ':=':
+      self.pos += 2
+      return Token(Type.DEFAS, ':=')
+    
     if self.text[self.pos] == ':':
       self.pos += 1
-      if self.pos < len(self.text) and elf.text[self.pos] == '=':
-        self.pos += 1
-        return Token(Type.DEFAS, ':=')
       return Token(Type.COLON, ':')
+    
+    if self.pos+1 < len(self.text) and self.text[self.pos:self.pos+2] == '..':
+      self.pos += 2
+      return Token(Type.RANGE, '..')
     
     if self.text[self.pos] == '.':
       self.pos += 1
-      if self.pos < len(self.text) and self.text[self.pos] == '.':
-        self.pos += 1
-        return Token(Type.RANGE, '..')
       return Token(Type.PERIOD, '.')
     
     if self.text[self.pos] == ',':
@@ -203,7 +238,6 @@ class Lexer:
       self.pos += 1
       return Token(Type.SEMIC, ';')
 
-    
     if self.text[self.pos] == '?':
       self.pos += 1
       return Token(Type.QUEST, '?')
