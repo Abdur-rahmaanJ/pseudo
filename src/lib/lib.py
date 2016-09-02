@@ -1,3 +1,5 @@
+import math
+
 class Type:
   AND, \
   ARRAY, \
@@ -16,6 +18,7 @@ class Type:
   DIFF, \
   DIV, \
   DOM, \
+  E, \
   ELSE, \
   EOF, \
   EQ, \
@@ -72,7 +75,7 @@ class Type:
   VEC, \
   WHILE, \
   XOR, \
-  Z = range(72)
+  Z = range(75)
 
   @staticmethod
   def repr(type):
@@ -110,6 +113,8 @@ class Type:
       return 'DIV'
     if type == Type.DOM:
       return 'DOM'
+    if type == Type.E:
+      return 'E'
     if type == Type.ELSE:
       return 'ELSE'
     if type == Type.EOF:
@@ -250,22 +255,27 @@ class Reserved:
         'and': Token(Type.AND, '&'),
         'B': Token(Type.B, 'B'),
         'Boolean': Token(Type.B, 'B'),
+        'diff': Token(Type.DIFF, '-'),
+        'e': Token(Type.E, math.e),
         'else': Token(Type.ELSE, 'else'),
         'false': Token(Type.BOOL, False),
         'forall': Token(Type.FORALL, 'forall'),
         'if': Token(Type.IF, 'if'),
         'iff': Token(Type.IFF, '<=>'),
         'in': Token(Type.IN, 'in'),
+        'inter': Token(Type.AND, '&'),
         'is': Token(Type.IS, 'is'),
         'Integer': Token(Type.Z, 'Z'),
         'let': Token(Type.LET, 'let'),
         'mod': Token(Type.MOD, '%'),
         'N': Token(Type.N, 'N'),
         'Natural': Token(Type.N, 'N'),
-        'null': Token(Type.NULL, 'null'),
+        'not': Token(Type.NOT, '~'),
+        'null': Token(Type.NULL, None),
         'of': Token(Type.OF, 'of'),
         'onlyif': Token(Type.IMPL, '=>'),
-        'pi': Token(Type.PI, 'pi'),
+        'or': Token(Type.UNION, '+'),
+        'pi': Token(Type.PI, math.pi),
         'Q': Token(Type.Q, 'Q'),
         'Rational': Token(Type.Q, 'Q'),
         'R': Token(Type.R, 'R'),
@@ -277,6 +287,7 @@ class Reserved:
         'to': Token(Type.TO, '->'),
         'true': Token(Type.BOOL, True),
         'U': Token(Type.U, 'U'),
+        'union': Token(Type.UNION, '+'),
         'Universal': Token(Type.U, 'U'),
         'while': Token(Type.WHILE, 'while'),
         'xor': Token(Type.XOR, '^'),

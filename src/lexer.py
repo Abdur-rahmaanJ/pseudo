@@ -30,6 +30,9 @@ class Lexer:
       self.pos += 2
       while self.pos+1 < len(self.text) and self.text[self.pos:self.pos+2] != '*/':
         self.pos += 1
+      if self.pos+1 == len(self.text):
+        raise
+      self.pos += 2
       while self.pos < len(self.text) and self.text[self.pos].isspace():
         self.pos += 1
 
