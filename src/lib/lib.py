@@ -1,12 +1,12 @@
 class Type:
   CLOSEP, \
   DIV, \
+  DOT, \
   EOF, \
   FACT, \
   INT, \
   MOD, \
   MINUS, \
-  MULT, \
   OPENP, \
   PIPE, \
   PLUS, \
@@ -19,6 +19,8 @@ class Type:
       return 'CLOSEP'
     if type == Type.DIV:
       return 'DIV'
+    if type == Type.DOT:
+      return 'DOT'
     if type == Type.EOF:
       return 'EOF'
     if type == Type.FACT:
@@ -29,8 +31,6 @@ class Type:
       return 'MOD'
     if type == Type.MINUS:
       return 'MINUS'
-    if type == Type.MULT:
-      return 'MULT'
     if type == Type.OPENP:
       return 'OPENP'
     if type == Type.PIPE:
@@ -47,6 +47,9 @@ class Token:
   def __init__(self, type, value):
     self.type = type
     self.value = value
+
+  def __eq__(self, token):
+    return self.type == token.type and self.value == token.value
 
   def __str__(self):
     return 'Token( {type}, {value} )'.format(

@@ -1,4 +1,4 @@
-from lib import Token, Type
+from src.lib.lib import Token, Type
 
 class Lexer:
 
@@ -14,6 +14,9 @@ class Lexer:
     self.pos = 0
 
   def get_next_token(self):
+
+    while self.pos < len(self.text) and self.text[self.pos].isspace():
+      self.pos += 1
 
     if self.pos == len(self.text):
       return Token(Type.EOF, '')
@@ -34,7 +37,7 @@ class Lexer:
       i = self.pos
       while self.pos < len(self.text) and self.text[self.pos] >= '0' and self.text[self.pos] <= '9':
         self.pos += 1
-      if not (self.text[self.pos] == '.'):
+      if not (self.pos < len(self.text) and self.text[self.pos] == '.'):
         return Token(Type.INT, int(self.text[i:self.pos]))
       self.pos += 1
       if not(self.pos < len(self.text) and self.text[self.pos] >= '0' and self.text[self.pos] <= '9'):
@@ -48,7 +51,7 @@ class Lexer:
       if self.pos < len(self.text) and self.text[self.pos] == '*':
         self.pos += 1
         return Token(Type.POW, '**')
-      return Token(Type.MULT, '*')
+      return Token(Type.DOT, '*')
 
     if self.text[self.pos] == '/':
       self.pos += 1
