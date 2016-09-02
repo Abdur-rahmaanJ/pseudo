@@ -1,4 +1,4 @@
-from src.lib.lib import Token, Type
+from src.lib.lib import Reserved, Token, Type
 
 class Lexer:
 
@@ -10,8 +10,9 @@ class Lexer:
     return lexer
 
   def __init__(self, text):
-    self.text = text
+    self.reserved = Reserved()
     self.pos = 0
+    self.text = text
 
   def get_next_token(self):
 
@@ -26,6 +27,17 @@ class Lexer:
 
     if self.pos == len(self.text):
       return Token(Type.EOF, '')
+
+    if self.text[self.pos].isalpha() and not self.text[self.pos].isdigit():
+      i = self.pos
+      while self.pos < len(self.text) and self.text[self.pos].isalpha() and not self.text[self.pos].isdigit():
+        self.pos += 1
+      while self.pos < len(self.text) and self.text[self.pos] == '`':
+        self.pos += 1
+      lexeme = self.text[i:self.pos]
+      if lexeme in self.reserved.words:
+        return self.reserved.words[lexeme]
+      return Token(Type.ID, self.text[i:self.pos])
 
     if self.text[self.pos] == '"':
       self.pos += 1
@@ -74,12 +86,16 @@ class Lexer:
         self.pos += 1
       return Token(Type.REAL, float(self.text[i:self.pos]))
 
+    if self.text[self.pos] == '_':
+      self.pos += 1
+      return Token(Type.UNDER, '_')
+    
     if self.text[self.pos] == '*':
       self.pos += 1
       if self.pos < len(self.text) and self.text[self.pos] == '*':
         self.pos += 1
         return Token(Type.POW, '**')
-      return Token(Type.DOT, '*')
+      return Token(Type.COMPOSE, '*')
 
     if self.text[self.pos] == '/':
       self.pos += 1
@@ -88,18 +104,54 @@ class Lexer:
     if self.text[self.pos] == '%':
       self.pos += 1
       return Token(Type.MOD, '%')
+    
+    if self.text[self.pos] == '^':
+      self.pos += 1
+      return Token(Type.XOR, '^')
+
+    if self.text[self.pos] == '&':
+      self.pos += 1
+      return Token(Type.AND, '&')
 
     if self.text[self.pos] == '+':
       self.pos += 1
-      return Token(Type.PLUS, '+')
+      return Token(Type.UNION, '+')
 
     if self.text[self.pos] == '-':
       self.pos += 1
-      return Token(Type.MINUS, '-')
+      if self.pos < len(self.text) and self.text[self.pos] == '>':
+        self.pos += 1
+        return Token(Type.TO, '->')
+      return Token(Type.DIFF, '-')
 
     if self.text[self.pos] == '!':
       self.pos += 1
       return Token(Type.FACT, '!')
+
+    if self.text[self.pos] == '~':
+      self.pos += 1
+      if self.pos < len(self.text) and self.text[self.pos] == '=':
+        self.pos += 1
+        return Token(Type.NEQ, '~=')
+      return Token(Type.NOT, '~')
+    
+    if self.text[self.pos] == '>':
+      self.pos += 1
+      if self.pos < len(self.text) and self.text[self.pos] == '=':
+        self.pos += 1
+        return Token(Type.GTEQ, '>=')
+      return Token(Type.GT, '>')
+    
+    if self.text[self.pos] == '<':
+      self.pos += 1
+      if self.pos < len(self.text) and self.text[self.pos] == '=':
+        self.pos += 1
+        return Token(Type.LTEQ, '<=')
+      return Token(Type.LT, '<')
+
+    if self.text[self.pos] == '=':
+      self.pos += 1
+      return Token(Type.EQ, '=')
 
     if self.text[self.pos] == '(':
       self.pos += 1
@@ -112,5 +164,48 @@ class Lexer:
     if self.text[self.pos] == '|':
       self.pos += 1
       return Token(Type.PIPE, '|')
+
+    if self.text[self.pos] == '[':
+      self.pos += 1
+      return Token(Type.OPENB, '[')
+
+    if self.text[self.pos] == ']':
+      self.pos += 1
+      return Token(Type.CLOSEB, ']')
+    
+    if self.text[self.pos] == '{':
+      self.pos += 1
+      return Token(Type.OPENC, '{')
+
+    if self.text[self.pos] == '}':
+      self.pos += 1
+      return Token(Type.CLOSEC, '}')
+
+    if self.text[self.pos] == ':':
+      self.pos += 1
+      if self.pos < len(self.text) and elf.text[self.pos] == '=':
+        self.pos += 1
+        return Token(Type.DEFAS, ':=')
+      return Token(Type.COLON, ':')
+    
+    if self.text[self.pos] == '.':
+      self.pos += 1
+      if self.pos < len(self.text) and self.text[self.pos] == '.':
+        self.pos += 1
+        return Token(Type.RANGE, '..')
+      return Token(Type.PERIOD, '.')
+    
+    if self.text[self.pos] == ',':
+      self.pos += 1
+      return Token(Type.COMMA, ',')
+    
+    if self.text[self.pos] == ';':
+      self.pos += 1
+      return Token(Type.SEMIC, ';')
+
+    
+    if self.text[self.pos] == '?':
+      self.pos += 1
+      return Token(Type.QUEST, '?')
 
     raise
