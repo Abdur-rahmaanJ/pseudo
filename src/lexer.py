@@ -27,6 +27,28 @@ class Lexer:
     if self.pos == len(self.text):
       return Token(Type.EOF, '')
 
+    if self.text[self.pos] == '"':
+      self.pos += 1
+      i = self.pos
+      while self.pos < len(self.text) and self.text[self.pos] != '"':
+        self.pos += 1
+      if self.pos == len(self.text):
+        raise
+      j = self.pos
+      self.pos += 1
+      return Token(Type.STRING, self.text[i:j])
+
+    if self.text[self.pos] == "'":
+      self.pos += 1
+      i = self.pos
+      while self.pos < len(self.text) and self.text[self.pos] != "'":
+        self.pos += 1
+      if self.pos == len(self.text):
+        raise
+      j = self.pos
+      self.pos += 1
+      return Token(Type.STRING, self.text[i:j])
+
     if self.text[self.pos] == '0':
       i = self.pos
       self.pos += 1

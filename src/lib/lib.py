@@ -11,7 +11,8 @@ class Type:
   PIPE, \
   PLUS, \
   POW, \
-  REAL = range(13)
+  REAL, \
+  STRING = range(14)
 
   @staticmethod
   def repr(type):
@@ -41,6 +42,8 @@ class Type:
       return 'POW'
     if type == Type.REAL:
       return 'REAL'
+    if type == Type.STRING:
+      return 'STRING'
 
 class Token:
 

@@ -113,4 +113,21 @@ class TestLexer(unittest.TestCase):
     self.assertEqual(lexer.get_next_token(), Token(Type.PLUS, '+'))
     self.assertEqual(lexer.get_next_token(), Token(Type.INT, 1))
     self.assertEqual(lexer.get_next_token(), Token(Type.EOF, ''))
+
+  def test_double_quoted_string(self):
+    lexer = Lexer('"#HelloWorld123"')
+    self.assertEqual(lexer.get_next_token(), Token(Type.STRING, '#HelloWorld123'))
+    self.assertEqual(lexer.get_next_token(), Token(Type.EOF, ''))
   
+  def test_double_quoted_string_must_close(self):
+    lexer = Lexer('"#HelloWorld123')
+    self.assertRaises(Exception, lexer.get_next_token)
+
+  def test_single_quoted_string(self):
+    lexer = Lexer("'#HelloWorld123'")
+    self.assertEqual(lexer.get_next_token(), Token(Type.STRING, '#HelloWorld123'))
+    self.assertEqual(lexer.get_next_token(), Token(Type.EOF, ''))
+  
+  def test_single_quoted_string_must_close(self):
+    lexer = Lexer('"#HelloWorld123')
+    self.assertRaises(Exception, lexer.get_next_token)
