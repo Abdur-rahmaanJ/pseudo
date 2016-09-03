@@ -1,3 +1,3 @@
-from src.lexer import Lexer
+from src.interpreter import Interpreter
 
-print Lexer('1 + 1')
+print Interpreter('1 + 1')
