@@ -16,8 +16,7 @@ class Interpreter:
         type == Type.INT or type == Type.REAL or \
         type == Type.BOOL or type == Type.STRING or \
         type == Type.OPENP or type == Type.OPENB or \
-        type == Type.OPENC or \
-        type == Type.PI or type == Type.E
+        type == Type.OPENC
   
   def ae(self):
     if Interpreter.is_first_of_term(self.token.type):
@@ -147,7 +146,126 @@ class Interpreter:
       raise
   
   def term(self):
+    if self.token.type == Type.UNION or self.token.type == Type.DIFF:
+      self.unary_op()
+      self.var_num_term()
+    elif self.token.type == Type.NOT:
+      self.token = self.lexer.get_next_token()
+      if self.token.type == Type.BOOL or self.token.type == Type.NULL:
+        self.bool_term()
+      elif self.token.type == Type.ID:
+        self.token = self.lexer.get_next_token()
+      else:
+        raise
+    elif self.token.type == Type.ID or self.token.type == Type.INT or \
+        self.token.type == Type.REAL or self.token.type == Type.CARD:
+      self.var_num_term()
+    elif self.token.type == Type.BOOL or self.token.type == Type.NULL or \
+        self.token.type == Type.OPENP or self.token.type == type.OPENB or \
+        self.token.type == Type.OPENC or self.token.type == Type.STRING:
+      self.constant_term()
+    else:
+      raise
+  
+  def unary_op(self):
+    if self.token.type == Type.UNION:
+      self.token = self.lexer.get_next_token()
+    elif self.token.type == Type.DIFF:
+      self.token = self.lexer.get_next_token()
+    else:
+      raise
+  
+  def var_num_term(self):
+    if self.token.type == Type.ID:
+      self.token = self.lexer.get_next_token()
+      self.fact()
+    elif self.token.type == Type.INT or self.token.type == Type.REAL or \
+        self.token.type == Type.CARD:
+      self.num_term()
+    else:
+      raise
+  
+  def num_term(self):
     if self.token.type == Type.INT:
+      self.token = self.lexer.get_next_token()
+      self.fact()
+    elif self.token.type == Type.REAL:
+      self.token = self.lexer.get_next_token()
+    elif self.token.type == Type.CARD:
+      self.card_term()
+      self.fact()
+    else:
+      raise
+
+  def card_term(self):
+    if self.token.type == Type.CARD:
+      self.token = self.lexer.get_next_token()
+      if self.token.type == Type.ID:
+        self.token = self.lexer.get_next_token()
+      elif self.token.type == Type.OPENP or self.token.type == Type.OPENB or \
+          self.token.type == Type.OPENC:
+        self.struct_term()
+      else:
+        raise
+    else:
+      raise
+  
+  def fact(self):
+    if self.token.type == Type.FACT:
+      self.token = self.lexer.get_next_token()
+  
+  def struct_term(self):
+    if self.token.type == Type.OPENP:
+      self.token = self.lexer.get_next_token()
+      self.e_list()
+      if self.token.type == Type.CLOSEP:
+        self.token = self.lexer.get_next_token()
+      else:
+        raise
+    elif self.token.type == Type.OPENB:
+      self.token = self.lexer.get_next_token()
+      self.e_list()
+      if self.token.type == Type.CLOSEB:
+        self.token = self.lexer.get_next_token()
+      else:
+        raise
+    elif self.token.type == Type.OPENC:
+      self.token = self.lexer.get_next_token()
+      self.e_list()
+      if self.token.type == Type.CLOSEC:
+        self.token = self.lexer.get_next_token()
+      else:
+        raise
+    else:
+      raise
+
+  def e_list(self):
+    if Interpreter.is_first_of_term(self.token.type):
+      self.c5e()
+      self.e_list_tail()
+    else:
+      raise
+  
+  def e_list_tail(self):
+    if self.token.type == Type.COMMA:
+      self.token = self.lexer.get_next_token()
+      self.e_list()
+  
+  def bool_term(self):
+    if self.token.type == Type.BOOL:
+      self.token = self.lexer.get_next_token()
+    elif self.token.type == Type.NULL:
+      self.token = self.lexer.get_next_token()
+    else:
+      raise
+  
+  def constant_term(self):
+    if self.token.type == Type.BOOL or self.token.type == Type.NULL:
+      self.bool_term()
+    elif self.token.type == Type.OPENP or self.token.type == Type.OPENB or \
+        self.token.type == Type.OPENC:
+      self.struct_term()
+    elif self.token.type == Type.STRING:
       self.token = self.lexer.get_next_token()
     else:
       raise

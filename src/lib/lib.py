@@ -18,7 +18,6 @@ class Type:
   DIFF, \
   DIV, \
   DOM, \
-  E, \
   ELSE, \
   EOF, \
   EQ, \
@@ -51,7 +50,6 @@ class Type:
   OPENC, \
   OPENP, \
   PERIOD, \
-  PI, \
   PIPE, \
   POW, \
   Q, \
@@ -75,7 +73,7 @@ class Type:
   VEC, \
   WHILE, \
   XOR, \
-  Z = range(75)
+  Z = range(73)
 
   @staticmethod
   def repr(type):
@@ -113,8 +111,6 @@ class Type:
       return 'DIV'
     if type == Type.DOM:
       return 'DOM'
-    if type == Type.E:
-      return 'E'
     if type == Type.ELSE:
       return 'ELSE'
     if type == Type.EOF:
@@ -179,8 +175,6 @@ class Type:
       return 'OPENP'
     if type == Type.PERIOD:
       return 'PERIOD'
-    if type == Type.PI:
-      return 'PI'
     if type == Type.PIPE:
       return 'PIPE'
     if type == Type.POW:
@@ -256,7 +250,7 @@ class Reserved:
         'B': Token(Type.B, 'B'),
         'Boolean': Token(Type.B, 'B'),
         'diff': Token(Type.DIFF, '-'),
-        'e': Token(Type.E, math.e),
+        'e': Token(Type.REAL, math.e),
         'else': Token(Type.ELSE, 'else'),
         'false': Token(Type.BOOL, False),
         'forall': Token(Type.FORALL, 'forall'),
@@ -275,7 +269,7 @@ class Reserved:
         'of': Token(Type.OF, 'of'),
         'onlyif': Token(Type.IMPL, '=>'),
         'or': Token(Type.UNION, '+'),
-        'pi': Token(Type.PI, math.pi),
+        'pi': Token(Type.REAL, math.pi),
         'Q': Token(Type.Q, 'Q'),
         'Rational': Token(Type.Q, 'Q'),
         'R': Token(Type.R, 'R'),
