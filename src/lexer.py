@@ -77,9 +77,9 @@ class Lexer:
       self.pos += 1
       if not (self.pos < len(self.text) and self.text[self.pos] == '.'):
         return Token(Type.INT, int(self.text[i]))
+      if not(self.pos+1 < len(self.text) and self.text[self.pos+1] >= '0' and self.text[self.pos+1] <= '9'):
+        return Token(Type.INT, int(self.text[i]))
       self.pos += 1
-      if not(self.pos < len(self.text) and self.text[self.pos] >= '0' and self.text[self.pos] <= '9'):
-        raise
       while self.pos < len(self.text) and self.text[self.pos] >= '0' and self.text[self.pos] <= '9':
         self.pos += 1
       return Token(Type.REAL, float(self.text[i:self.pos]))
@@ -90,9 +90,9 @@ class Lexer:
         self.pos += 1
       if not (self.pos < len(self.text) and self.text[self.pos] == '.'):
         return Token(Type.INT, int(self.text[i:self.pos]))
+      if not(self.pos+1 < len(self.text) and self.text[self.pos+1] >= '0' and self.text[self.pos+1] <= '9'):
+        return Token(Type.INT, int(self.text[i:self.pos]))
       self.pos += 1
-      if not(self.pos < len(self.text) and self.text[self.pos] >= '0' and self.text[self.pos] <= '9'):
-        raise
       while self.pos < len(self.text) and self.text[self.pos] >= '0' and self.text[self.pos] <= '9':
         self.pos += 1
       return Token(Type.REAL, float(self.text[i:self.pos]))

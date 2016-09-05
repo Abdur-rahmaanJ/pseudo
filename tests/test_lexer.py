@@ -11,11 +11,33 @@ class TestLexer(unittest.TestCase):
     self.assertEqual(lexer.get_next_token(), Token(Type.FACT, '!'))
     self.assertEqual(lexer.get_next_token(), Token(Type.EOF, ''))
 
+  def test_set_cardinality(self):
+    lexer = Lexer('#{1}')
+    self.assertEqual(lexer.get_next_token(), Token(Type.CARD, '#'))
+    self.assertEqual(lexer.get_next_token(), Token(Type.OPENC, '{'))
+    self.assertEqual(lexer.get_next_token(), Token(Type.INT, 1))
+    self.assertEqual(lexer.get_next_token(), Token(Type.CLOSEC, '}'))
+    self.assertEqual(lexer.get_next_token(), Token(Type.EOF, ''))
+  
+  def test_not_bool(self):
+    lexer = Lexer('~false')
+    self.assertEqual(lexer.get_next_token(), Token(Type.NOT, '~'))
+    self.assertEqual(lexer.get_next_token(), Token(Type.BOOL, False))
+    self.assertEqual(lexer.get_next_token(), Token(Type.EOF, ''))
+
   def test_integer_pow(self):
-    lexer = Lexer('1 ** 1')
+    lexer = Lexer('1**1')
     self.assertEqual(lexer.get_next_token(), Token(Type.INT, 1))
     self.assertEqual(lexer.get_next_token(), Token(Type.POW, '**'))
     self.assertEqual(lexer.get_next_token(), Token(Type.INT, 1))
+    self.assertEqual(lexer.get_next_token(), Token(Type.EOF, ''))
+  
+  def test_vector_transposition(self):
+    lexer = Lexer('(1)**T')
+    self.assertEqual(lexer.get_next_token(), Token(Type.OPENP, '('))
+    self.assertEqual(lexer.get_next_token(), Token(Type.INT, 1))
+    self.assertEqual(lexer.get_next_token(), Token(Type.CLOSEP, ')'))
+    self.assertEqual(lexer.get_next_token(), Token(Type.TPOSE, '**T'))
     self.assertEqual(lexer.get_next_token(), Token(Type.EOF, ''))
 
   def test_integer_composition(self):
@@ -87,13 +109,17 @@ class TestLexer(unittest.TestCase):
     lexer = Lexer('0.0 + 0.')
     self.assertEqual(lexer.get_next_token(), Token(Type.REAL, 0.0))
     self.assertEqual(lexer.get_next_token(), Token(Type.UNION, '+'))
-    self.assertRaises(Exception, lexer.get_next_token)
+    self.assertEqual(lexer.get_next_token(), Token(Type.INT, 0))
+    self.assertEqual(lexer.get_next_token(), Token(Type.PERIOD, '.'))
+    self.assertEqual(lexer.get_next_token(), Token(Type.EOF, ''))
 
   def test_real_must_have_fraction_again(self):
     lexer = Lexer('1.0 + 1.')
     self.assertEqual(lexer.get_next_token(), Token(Type.REAL, 1.0))
     self.assertEqual(lexer.get_next_token(), Token(Type.UNION, '+'))
-    self.assertRaises(Exception, lexer.get_next_token)
+    self.assertEqual(lexer.get_next_token(), Token(Type.INT, 1))
+    self.assertEqual(lexer.get_next_token(), Token(Type.PERIOD, '.'))
+    self.assertEqual(lexer.get_next_token(), Token(Type.EOF, ''))
 
   def test_no_unknown_symbols(self):
     lexer = Lexer('1 + @')
@@ -220,10 +246,10 @@ class TestLexer(unittest.TestCase):
   
   def test_reserved_values(self):
     lexer = Lexer('e false null pi true')
-    self.assertEqual(lexer.get_next_token(), Token(Type.E, math.e))
+    self.assertEqual(lexer.get_next_token(), Token(Type.REAL, math.e))
     self.assertEqual(lexer.get_next_token(), Token(Type.BOOL, False))
     self.assertEqual(lexer.get_next_token(), Token(Type.NULL, None))
-    self.assertEqual(lexer.get_next_token(), Token(Type.PI, math.pi))
+    self.assertEqual(lexer.get_next_token(), Token(Type.REAL, math.pi))
     self.assertEqual(lexer.get_next_token(), Token(Type.BOOL, True))
     self.assertEqual(lexer.get_next_token(), Token(Type.EOF, ''))
   
@@ -258,5 +284,103 @@ class TestLexer(unittest.TestCase):
     self.assertEqual(lexer.get_next_token(), Token(Type.U, 'U'))
     self.assertEqual(lexer.get_next_token(), Token(Type.U, 'U'))
     self.assertEqual(lexer.get_next_token(), Token(Type.Z, 'Z'))
+    self.assertEqual(lexer.get_next_token(), Token(Type.EOF, ''))
+  
+  def test_integer_equal(self):
+    lexer = Lexer('1 = 1')
+    self.assertEqual(lexer.get_next_token(), Token(Type.INT, 1))
+    self.assertEqual(lexer.get_next_token(), Token(Type.EQ, '='))
+    self.assertEqual(lexer.get_next_token(), Token(Type.INT, 1))
+    self.assertEqual(lexer.get_next_token(), Token(Type.EOF, ''))
+  
+  def test_integer_not_equal(self):
+    lexer = Lexer('1 ~= 1')
+    self.assertEqual(lexer.get_next_token(), Token(Type.INT, 1))
+    self.assertEqual(lexer.get_next_token(), Token(Type.NEQ, '~='))
+    self.assertEqual(lexer.get_next_token(), Token(Type.INT, 1))
+    self.assertEqual(lexer.get_next_token(), Token(Type.EOF, ''))
+  
+  def test_integer_less_than(self):
+    lexer = Lexer('1 < 1')
+    self.assertEqual(lexer.get_next_token(), Token(Type.INT, 1))
+    self.assertEqual(lexer.get_next_token(), Token(Type.LT, '<'))
+    self.assertEqual(lexer.get_next_token(), Token(Type.INT, 1))
+    self.assertEqual(lexer.get_next_token(), Token(Type.EOF, ''))
+  
+  def test_integer_less_than_equal(self):
+    lexer = Lexer('1 <= 1')
+    self.assertEqual(lexer.get_next_token(), Token(Type.INT, 1))
+    self.assertEqual(lexer.get_next_token(), Token(Type.LTEQ, '<='))
+    self.assertEqual(lexer.get_next_token(), Token(Type.INT, 1))
+    self.assertEqual(lexer.get_next_token(), Token(Type.EOF, ''))
+  
+  def test_integer_greater_than(self):
+    lexer = Lexer('1 > 1')
+    self.assertEqual(lexer.get_next_token(), Token(Type.INT, 1))
+    self.assertEqual(lexer.get_next_token(), Token(Type.GT, '>'))
+    self.assertEqual(lexer.get_next_token(), Token(Type.INT, 1))
+    self.assertEqual(lexer.get_next_token(), Token(Type.EOF, ''))
+  
+  def test_integer_greater_than_equal(self):
+    lexer = Lexer('1 >= 1')
+    self.assertEqual(lexer.get_next_token(), Token(Type.INT, 1))
+    self.assertEqual(lexer.get_next_token(), Token(Type.GTEQ, '>='))
+    self.assertEqual(lexer.get_next_token(), Token(Type.INT, 1))
+    self.assertEqual(lexer.get_next_token(), Token(Type.EOF, ''))
+  
+  def test_vector_norm(self):
+    lexer = Lexer('|| (1) ||')
+    self.assertEqual(lexer.get_next_token(), Token(Type.NORM, '||'))
+    self.assertEqual(lexer.get_next_token(), Token(Type.OPENP, '('))
+    self.assertEqual(lexer.get_next_token(), Token(Type.INT, 1))
+    self.assertEqual(lexer.get_next_token(), Token(Type.CLOSEP, ')'))
+    self.assertEqual(lexer.get_next_token(), Token(Type.NORM, '||'))
+    self.assertEqual(lexer.get_next_token(), Token(Type.EOF, ''))
+  
+  def test_assignment_expression(self):
+    lexer = Lexer('let x of Z := 5.')
+    self.assertEqual(lexer.get_next_token(), Token(Type.LET, 'let'))
+    self.assertEqual(lexer.get_next_token(), Token(Type.ID, 'x'))
+    self.assertEqual(lexer.get_next_token(), Token(Type.OF, 'of'))
+    self.assertEqual(lexer.get_next_token(), Token(Type.Z, 'Z'))
+    self.assertEqual(lexer.get_next_token(), Token(Type.DEFAS, ':='))
+    self.assertEqual(lexer.get_next_token(), Token(Type.INT, 5))
+    self.assertEqual(lexer.get_next_token(), Token(Type.PERIOD, '.'))
+    self.assertEqual(lexer.get_next_token(), Token(Type.EOF, ''))
+  
+  def test_function_declaration(self):
+    lexer = Lexer('let f: Z -> Z, f(x) := 5x.')
+    self.assertEqual(lexer.get_next_token(), Token(Type.LET, 'let'))
+    self.assertEqual(lexer.get_next_token(), Token(Type.ID, 'f'))
+    self.assertEqual(lexer.get_next_token(), Token(Type.COLON, ':'))
+    self.assertEqual(lexer.get_next_token(), Token(Type.Z, 'Z'))
+    self.assertEqual(lexer.get_next_token(), Token(Type.TO, '->'))
+    self.assertEqual(lexer.get_next_token(), Token(Type.Z, 'Z'))
+    self.assertEqual(lexer.get_next_token(), Token(Type.COMMA, ','))
+    self.assertEqual(lexer.get_next_token(), Token(Type.ID, 'f'))
+    self.assertEqual(lexer.get_next_token(), Token(Type.OPENP, '('))
+    self.assertEqual(lexer.get_next_token(), Token(Type.ID, 'x'))
+    self.assertEqual(lexer.get_next_token(), Token(Type.CLOSEP, ')'))
+    self.assertEqual(lexer.get_next_token(), Token(Type.DEFAS, ':='))
+    self.assertEqual(lexer.get_next_token(), Token(Type.INT, 5))
+    self.assertEqual(lexer.get_next_token(), Token(Type.ID, 'x'))
+    self.assertEqual(lexer.get_next_token(), Token(Type.PERIOD, '.'))
+    self.assertEqual(lexer.get_next_token(), Token(Type.EOF, ''))
+  
+  def test_step_interval(self):
+    lexer = Lexer('forall x in [1,..1..,#X)')
+    self.assertEqual(lexer.get_next_token(), Token(Type.FORALL, 'forall'))
+    self.assertEqual(lexer.get_next_token(), Token(Type.ID, 'x'))
+    self.assertEqual(lexer.get_next_token(), Token(Type.IN, 'in'))
+    self.assertEqual(lexer.get_next_token(), Token(Type.OPENB, '['))
+    self.assertEqual(lexer.get_next_token(), Token(Type.INT, 1))
+    self.assertEqual(lexer.get_next_token(), Token(Type.COMMA, ','))
+    self.assertEqual(lexer.get_next_token(), Token(Type.RANGE, '..'))
+    self.assertEqual(lexer.get_next_token(), Token(Type.INT, 1))
+    self.assertEqual(lexer.get_next_token(), Token(Type.RANGE, '..'))
+    self.assertEqual(lexer.get_next_token(), Token(Type.COMMA, ','))
+    self.assertEqual(lexer.get_next_token(), Token(Type.CARD, '#'))
+    self.assertEqual(lexer.get_next_token(), Token(Type.ID, 'X'))
+    self.assertEqual(lexer.get_next_token(), Token(Type.CLOSEP, ')'))
     self.assertEqual(lexer.get_next_token(), Token(Type.EOF, ''))
   
